@@ -109,6 +109,10 @@ module GHI
       def any_or_none_or input
         input ? input : { nil => '*', false => 'none' }[input]
       end
+
+      def find_mode?
+        false
+      end
     end
   end
 end
