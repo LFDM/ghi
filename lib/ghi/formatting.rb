@@ -117,8 +117,7 @@ module GHI
     end
 
     def format_issues_header(params = assigns)
-      state = params[:state] || 'open'
-      header = "# #{repo || 'Global,'} #{state} issues"
+      header = header_start(params)
 
       if keywords = params[:q]
         # keywords are a string delimited by a space
@@ -128,7 +127,7 @@ module GHI
         header << " with the keyword#{pl} #{kw_string}"
       end
 
-      if repo
+      if repo || find_mode?
         if milestone = params[:milestone]
           case milestone
             when '*'    then header << ' with a milestone'
@@ -489,6 +488,18 @@ EOF
       if thread
         thread.kill
         puts "\r#{CURSOR[:column][position]}#{redraw}#{CURSOR[:show]}"
+      end
+    end
+
+    private
+
+    def header_start(params)
+      state = params[:state] || 'open'
+      if (user = assigns[:user]) && find_mode?
+        user = 'you' if user == Authorization.username
+        "# #{state.capitalize} issues in repos of #{user}"
+      else
+        "# #{repo || 'Global,'} #{state} issues"
       end
     end
   end
